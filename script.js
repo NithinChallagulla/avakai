@@ -9,7 +9,13 @@ function openTab(id, btn) {
 
   document.getElementById(id).classList.add("active");
   if (btn) btn.classList.add("active");
+
+  // 🔥 IMPORTANT: load stream when Stream tab opens
+  if (id === "stream") {
+    setTimeout(loadStream, 300);
+  }
 }
+
 
 /* ---------- FETCH STREAMS ---------- */
 async function fetchStreams() {
