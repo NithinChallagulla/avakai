@@ -1,0 +1,103 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7fbfd;
+  color: #0b2545;
+}
+
+header {
+  background: #0b2545;
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: #e6f7fa;
+}
+
+.tab-btn {
+  padding: 10px 18px;
+  border: none;
+  background: #00bcd4;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.tab-btn.active {
+  background: #0b2545;
+}
+
+.tab {
+  display: none;
+  padding: 20px;
+}
+
+.tab.active {
+  display: block;
+}
+
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.card h3 {
+  margin: 0;
+  color: #0b2545;
+}
+
+.card p {
+  margin: 6px 0;
+  font-weight: bold;
+}
+
+.stream-layout {
+  position: relative;
+  max-width: 800px;
+}
+
+video {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255,255,255,0.85);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #00bcd4;
+  color: white;
+}
