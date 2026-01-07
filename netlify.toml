@@ -1,0 +1,5 @@
+[[redirects]]
+from = "/hls/*"
+to = "http://34.93.62.26/hls/:splat"
+status = 200
+force = true
