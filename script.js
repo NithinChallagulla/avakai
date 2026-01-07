@@ -86,7 +86,7 @@ async function loadStream() {
   if (!sel || !video) return;
 
   const id = sel.value;
-const url = `https://34.93.62.26/hls/${id}.m3u8`;
+const url = "http://34.93.62.26/hls/TEST001.m3u8";
 
   if (Hls.isSupported()) {
   const hls = new Hls({
