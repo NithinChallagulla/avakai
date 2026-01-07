@@ -2,6 +2,7 @@ const API = "/api";
 let streams = [];
 let overlayInterval = null;
 let hls = null;
+let currentStreamId = null;
 
 /* ---------- TAB HANDLING ---------- */
 function openTab(id, btn) {
@@ -12,7 +13,7 @@ function openTab(id, btn) {
   if (btn) btn.classList.add("active");
 
   if (id === "stream") {
-    setTimeout(loadStream, 300);
+    setTimeout(loadStream, 200);
   }
 }
 
@@ -24,7 +25,7 @@ async function fetchStreams() {
 
     renderCounts();
     renderMaster();
-    populateSelect();
+    populateSelectPreserve();
   } catch (e) {
     console.error("fetchStreams failed", e);
   }
@@ -68,15 +69,28 @@ function renderMaster() {
   });
 }
 
-/* ---------- STREAM SELECT ---------- */
-function populateSelect() {
+/* ---------- STREAM SELECT (PRESERVE SELECTION) ---------- */
+function populateSelectPreserve() {
   const sel = document.getElementById("streamSelect");
   if (!sel) return;
 
+  const prev = sel.value;
   sel.innerHTML = "";
+
   streams.forEach(s => {
-    sel.innerHTML += `<option value="${s.stream_id}">${s.name}</option>`;
+    const opt = document.createElement("option");
+    opt.value = s.stream_id;
+    opt.textContent = s.name;
+    sel.appendChild(opt);
   });
+
+  if (prev && streams.find(s => s.stream_id === prev)) {
+    sel.value = prev;
+  } else {
+    sel.value = streams[0]?.stream_id;
+  }
+
+  currentStreamId = sel.value;
 }
 
 /* ---------- STREAM PLAYER ---------- */
@@ -86,8 +100,8 @@ function loadStream() {
   if (!sel || !video) return;
 
   const id = sel.value;
+  currentStreamId = id;
 
-  // ⚠️ TEMPORARY DIRECT STREAM (works only on HTTP pages)
   const url = `http://34.93.62.26/hls/${id}.m3u8`;
 
   if (hls) {
@@ -96,11 +110,7 @@ function loadStream() {
   }
 
   if (Hls.isSupported()) {
-    hls = new Hls({
-      liveSyncDuration: 2,
-      lowLatencyMode: true
-    });
-
+    hls = new Hls({ liveSyncDuration: 2 });
     hls.loadSource(url);
     hls.attachMedia(video);
 
@@ -134,6 +144,23 @@ async function updateOverlay(id) {
 function startOverlayAutoUpdate(id) {
   if (overlayInterval) clearInterval(overlayInterval);
   overlayInterval = setInterval(() => updateOverlay(id), 3000);
+}
+
+/* ---------- RESET STREAM ---------- */
+async function resetStream() {
+  if (!currentStreamId) return;
+
+  if (!confirm(`Reset counts for ${currentStreamId}?`)) return;
+
+  try {
+    await fetch(`${API}/reset/${currentStreamId}`, {
+      method: "POST"
+    });
+    updateOverlay(currentStreamId);
+    fetchStreams();
+  } catch (e) {
+    alert("Reset failed");
+  }
 }
 
 /* ---------- START ---------- */
