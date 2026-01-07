@@ -88,7 +88,7 @@ function loadStream() {
   const id = sel.value;
 
   // ⚠️ TEMPORARY DIRECT STREAM (works only on HTTP pages)
-  const url = `http://34.93.62.26/hls/${id}.m3u8`;
+const url = `/hls/${id}.m3u8`;
 
   if (hls) {
     hls.destroy();
