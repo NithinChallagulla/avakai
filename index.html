@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Avakai Event Analytics</title>
- <link rel="stylesheet" href="./style.css">
+
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- HLS.js MUST be loaded before script.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-
 </head>
+
 <body>
 
 <header>
@@ -16,22 +18,29 @@
 
 <nav>
   <button class="tab-btn active" onclick="openTab('counts', this)">People Count</button>
-<button class="tab-btn" onclick="openTab('stream', this)">Stream + Count</button>
-<button class="tab-btn" onclick="openTab('master', this)">Master</button>
-
+  <button class="tab-btn" onclick="openTab('stream', this)">Stream + Count</button>
+  <button class="tab-btn" onclick="openTab('master', this)">Master</button>
 </nav>
 
-<!-- TAB 1 -->
+<!-- TAB 1: PEOPLE COUNT -->
 <section id="counts" class="tab active">
   <div id="countCards" class="card-container"></div>
 </section>
 
-<!-- TAB 2 -->
+<!-- TAB 2: STREAM + COUNT -->
 <section id="stream" class="tab">
-<select id="streamSelect" onchange="loadStream()"></select>
+  <select id="streamSelect" onchange="loadStream()"></select>
 
   <div class="stream-layout">
-<video id="video" controls autoplay muted playsinline></video>
+    <video
+      id="video"
+      controls
+      autoplay
+      muted
+      playsinline
+      style="width:100%; max-width:900px; background:#000;">
+    </video>
+
     <div class="overlay">
       <p id="liveCount">Live: -</p>
       <p id="todayCount">Today: -</p>
@@ -40,7 +49,7 @@
   </div>
 </section>
 
-<!-- TAB 3 -->
+<!-- TAB 3: MASTER -->
 <section id="master" class="tab">
   <table>
     <thead>
@@ -56,6 +65,8 @@
     <tbody id="masterTable"></tbody>
   </table>
 </section>
+
+<!-- MAIN SCRIPT -->
 <script src="./script.js"></script>
 
 </body>
