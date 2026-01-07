@@ -5,8 +5,6 @@
   <title>Avakai Event Analytics</title>
 
   <link rel="stylesheet" href="./style.css">
-
-  <!-- HLS.js MUST be loaded before script.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 
@@ -22,12 +20,12 @@
   <button class="tab-btn" onclick="openTab('master', this)">Master</button>
 </nav>
 
-<!-- TAB 1: PEOPLE COUNT -->
+<!-- TAB 1 -->
 <section id="counts" class="tab active">
   <div id="countCards" class="card-container"></div>
 </section>
 
-<!-- TAB 2: STREAM + COUNT -->
+<!-- TAB 2 -->
 <section id="stream" class="tab">
   <select id="streamSelect" onchange="loadStream()"></select>
 
@@ -35,10 +33,10 @@
     <video
       id="video"
       controls
-      autoplay
       muted
+      autoplay
       playsinline
-      style="width:100%; max-width:900px; background:#000;">
+      style="width:100%; max-width:900px; background:black;">
     </video>
 
     <div class="overlay">
@@ -49,7 +47,7 @@
   </div>
 </section>
 
-<!-- TAB 3: MASTER -->
+<!-- TAB 3 -->
 <section id="master" class="tab">
   <table>
     <thead>
@@ -66,8 +64,6 @@
   </table>
 </section>
 
-<!-- MAIN SCRIPT -->
 <script src="./script.js"></script>
-
 </body>
 </html>
