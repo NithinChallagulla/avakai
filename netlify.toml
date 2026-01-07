@@ -1,5 +1,11 @@
 [[redirects]]
-from = "/hls/*"
-to = "http://34.93.62.26/hls/:splat"
-status = 200
-force = true
+  from = "/api/*"
+  to = "http://34.93.62.26:8000/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/hls/*"
+  to = "https://stream.avakai.aerovhyn.in/hls/:splat"
+  status = 200
+  force = true
