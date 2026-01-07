@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+counts.json
+*_counts.json
+.env
