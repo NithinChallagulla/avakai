@@ -1,7 +1,7 @@
 const API = "/api";
 let streams = [];
 let overlayInterval = null;
-let hlsInstance = null;
+let hls = null;
 
 /* ---------- TAB HANDLING ---------- */
 function openTab(id, btn) {
@@ -25,37 +25,37 @@ async function fetchStreams() {
     renderCounts();
     renderMaster();
     populateSelect();
-  } catch (err) {
-    console.error("Failed to fetch streams", err);
+  } catch (e) {
+    console.error("fetchStreams failed", e);
   }
 }
 
-/* ---------- PEOPLE COUNT TAB ---------- */
+/* ---------- PEOPLE COUNT ---------- */
 function renderCounts() {
-  const container = document.getElementById("countCards");
-  if (!container) return;
+  const el = document.getElementById("countCards");
+  if (!el) return;
 
-  container.innerHTML = "";
+  el.innerHTML = "";
   streams.forEach(s => {
-    container.innerHTML += `
+    el.innerHTML += `
       <div class="card">
         <h3>${s.name}</h3>
-        <p><b>Live:</b> ${s.live}</p>
-        <p><b>Today:</b> ${s.today}</p>
-        <p><b>Event:</b> ${s.event_total}</p>
+        <p>Live: ${s.live}</p>
+        <p>Today: ${s.today}</p>
+        <p>Event: ${s.event_total}</p>
       </div>
     `;
   });
 }
 
-/* ---------- MASTER TAB ---------- */
+/* ---------- MASTER ---------- */
 function renderMaster() {
-  const table = document.getElementById("masterTable");
-  if (!table) return;
+  const el = document.getElementById("masterTable");
+  if (!el) return;
 
-  table.innerHTML = "";
+  el.innerHTML = "";
   streams.forEach(s => {
-    table.innerHTML += `
+    el.innerHTML += `
       <tr>
         <td>${s.stream_id}</td>
         <td>${s.name}</td>
@@ -73,19 +73,13 @@ function populateSelect() {
   const sel = document.getElementById("streamSelect");
   if (!sel) return;
 
-  const current = sel.value;
   sel.innerHTML = "";
-
   streams.forEach(s => {
     sel.innerHTML += `<option value="${s.stream_id}">${s.name}</option>`;
   });
-
-  if (!current && streams.length > 0) {
-    sel.value = streams[0].stream_id;
-  }
 }
 
-/* ---------- STREAM + COUNT ---------- */
+/* ---------- STREAM PLAYER ---------- */
 function loadStream() {
   const sel = document.getElementById("streamSelect");
   const video = document.getElementById("video");
@@ -93,16 +87,55 @@ function loadStream() {
 
   const id = sel.value;
 
-  // 🔥 IMPORTANT: Netlify HLS proxy
-  const url = `/hls/${id}.m3u8`;
+  // ⚠️ TEMPORARY DIRECT STREAM (works only on HTTP pages)
+  const url = `http://34.93.62.26/hls/${id}.m3u8`;
 
-  // Destroy previous HLS instance
-  if (hlsInstance) {
-    hlsInstance.destroy();
-    hlsInstance = null;
+  if (hls) {
+    hls.destroy();
+    hls = null;
   }
 
-  if (window.Hls && Hls.isSupported()) {
-    hlsInstance = new Hls({
-      lowLatencyMode: true,
+  if (Hls.isSupported()) {
+    hls = new Hls({
       liveSyncDuration: 2,
+      lowLatencyMode: true
+    });
+
+    hls.loadSource(url);
+    hls.attachMedia(video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+      video.muted = true;
+      video.play().catch(() => {});
+    });
+  } else {
+    video.src = url;
+    video.play().catch(() => {});
+  }
+
+  updateOverlay(id);
+  startOverlayAutoUpdate(id);
+}
+
+/* ---------- OVERLAY ---------- */
+async function updateOverlay(id) {
+  try {
+    const res = await fetch(`${API}/count/${id}`);
+    const d = await res.json();
+
+    document.getElementById("liveCount").innerText = `Live: ${d.live}`;
+    document.getElementById("todayCount").innerText = `Today: ${d.today}`;
+    document.getElementById("eventCount").innerText = `Event: ${d.event_total}`;
+  } catch (e) {
+    console.error("overlay failed", e);
+  }
+}
+
+function startOverlayAutoUpdate(id) {
+  if (overlayInterval) clearInterval(overlayInterval);
+  overlayInterval = setInterval(() => updateOverlay(id), 3000);
+}
+
+/* ---------- START ---------- */
+setInterval(fetchStreams, 3000);
+fetchStreams();
