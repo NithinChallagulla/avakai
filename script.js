@@ -1,6 +1,7 @@
 const API = "/api";
 let streams = [];
 let overlayInterval = null;
+let hlsInstance = null;
 
 /* ---------- TAB HANDLING ---------- */
 function openTab(id, btn) {
@@ -10,18 +11,17 @@ function openTab(id, btn) {
   document.getElementById(id).classList.add("active");
   if (btn) btn.classList.add("active");
 
-  // 🔥 IMPORTANT: load stream when Stream tab opens
   if (id === "stream") {
     setTimeout(loadStream, 300);
   }
 }
-
 
 /* ---------- FETCH STREAMS ---------- */
 async function fetchStreams() {
   try {
     const res = await fetch(`${API}/streams`);
     streams = await res.json();
+
     renderCounts();
     renderMaster();
     populateSelect();
@@ -30,7 +30,7 @@ async function fetchStreams() {
   }
 }
 
-/* ---------- TAB 1: PEOPLE COUNT ---------- */
+/* ---------- PEOPLE COUNT TAB ---------- */
 function renderCounts() {
   const container = document.getElementById("countCards");
   if (!container) return;
@@ -48,7 +48,7 @@ function renderCounts() {
   });
 }
 
-/* ---------- TAB 3: MASTER ---------- */
+/* ---------- MASTER TAB ---------- */
 function renderMaster() {
   const table = document.getElementById("masterTable");
   if (!table) return;
@@ -73,64 +73,36 @@ function populateSelect() {
   const sel = document.getElementById("streamSelect");
   if (!sel) return;
 
+  const current = sel.value;
   sel.innerHTML = "";
+
   streams.forEach(s => {
     sel.innerHTML += `<option value="${s.stream_id}">${s.name}</option>`;
   });
+
+  if (!current && streams.length > 0) {
+    sel.value = streams[0].stream_id;
+  }
 }
 
-/* ---------- TAB 2: STREAM + COUNT ---------- */
-async function loadStream() {
+/* ---------- STREAM + COUNT ---------- */
+function loadStream() {
   const sel = document.getElementById("streamSelect");
   const video = document.getElementById("video");
   if (!sel || !video) return;
 
   const id = sel.value;
-const url = "http://34.93.62.26/hls/TEST001.m3u8";
 
-  if (Hls.isSupported()) {
-  const hls = new Hls({
-    lowLatencyMode: true,
-    liveSyncDuration: 2
-  });
+  // 🔥 IMPORTANT: Netlify HLS proxy
+  const url = `/hls/${id}.m3u8`;
 
-  hls.loadSource(url);
-  hls.attachMedia(video);
-
-  hls.on(Hls.Events.MANIFEST_PARSED, () => {
-    video.muted = true;
-    video.play().catch(() => {});
-  });
-} else {
-  video.src = url;
-  video.muted = true;
-  video.play().catch(() => {});
-}
-
-
-  updateOverlay(id);
-  startOverlayAutoUpdate(id);
-}
-
-/* ---------- OVERLAY UPDATE ---------- */
-async function updateOverlay(id) {
-  try {
-    const res = await fetch(`${API}/count/${id}`);
-    const data = await res.json();
-
-    document.getElementById("liveCount").innerText = `Live: ${data.live}`;
-    document.getElementById("todayCount").innerText = `Today: ${data.today}`;
-    document.getElementById("eventCount").innerText = `Event: ${data.event_total}`;
-  } catch (err) {
-    console.error("Overlay update failed", err);
+  // Destroy previous HLS instance
+  if (hlsInstance) {
+    hlsInstance.destroy();
+    hlsInstance = null;
   }
-}
 
-function startOverlayAutoUpdate(id) {
-  if (overlayInterval) clearInterval(overlayInterval);
-  overlayInterval = setInterval(() => updateOverlay(id), 3000);
-}
-
-/* ---------- AUTO REFRESH ---------- */
-setInterval(fetchStreams, 3000);
-fetchStreams();
+  if (window.Hls && Hls.isSupported()) {
+    hlsInstance = new Hls({
+      lowLatencyMode: true,
+      liveSyncDuration: 2,
