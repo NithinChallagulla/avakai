@@ -111,7 +111,6 @@ const url = `https://34.93.62.26/hls/${id}.m3u8`;
   updateOverlay(id);
   startOverlayAutoUpdate(id);
 }
-<video id="video" controls autoplay muted playsinline></video>
 
 /* ---------- OVERLAY UPDATE ---------- */
 async function updateOverlay(id) {
