@@ -89,16 +89,29 @@ async function loadStream() {
 const url = `https://34.93.62.26/hls/${id}.m3u8`;
 
   if (Hls.isSupported()) {
-    const hls = new Hls({ liveSyncDuration: 3 });
-    hls.loadSource(url);
-    hls.attachMedia(video);
-  } else {
-    video.src = url;
-  }
+  const hls = new Hls({
+    lowLatencyMode: true,
+    liveSyncDuration: 2
+  });
+
+  hls.loadSource(url);
+  hls.attachMedia(video);
+
+  hls.on(Hls.Events.MANIFEST_PARSED, () => {
+    video.muted = true;
+    video.play().catch(() => {});
+  });
+} else {
+  video.src = url;
+  video.muted = true;
+  video.play().catch(() => {});
+}
+
 
   updateOverlay(id);
   startOverlayAutoUpdate(id);
 }
+<video id="video" controls autoplay muted playsinline></video>
 
 /* ---------- OVERLAY UPDATE ---------- */
 async function updateOverlay(id) {
