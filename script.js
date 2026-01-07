@@ -1,4 +1,4 @@
-const API = "http://34.93.62.26:8000";
+const API = "/api";
 let streams = [];
 
 function openTab(id) {
