@@ -1,4 +1,4 @@
-const url = `https://34.93.62.26/hls/${id}.m3u8`;
+const API = "/api";
 let streams = [];
 let overlayInterval = null;
 
