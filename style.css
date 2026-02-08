@@ -1,103 +1,175 @@
+/* ---------- GLOBAL ---------- */
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f7fbfd;
-  color: #0b2545;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f2f6f9;
+  color: #1c2b36;
 }
 
+/* ---------- HEADER ---------- */
 header {
-  background: #0b2545;
+  background: linear-gradient(90deg, #0d3b66, #1f5f8b);
   color: white;
-  padding: 16px;
+  padding: 18px 10px;
   text-align: center;
 }
 
+.header-content h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.powered {
+  margin: 4px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ---------- NAV ---------- */
 nav {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  padding: 10px;
-  background: #e6f7fa;
+  gap: 12px;
+  padding: 12px;
+  background: #e7eef5;
+  border-bottom: 1px solid #d0dbe6;
 }
 
 .tab-btn {
   padding: 10px 18px;
   border: none;
-  background: #00bcd4;
+  background: #2a9d8f;
   color: white;
   cursor: pointer;
   border-radius: 6px;
-  font-weight: bold;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.tab-btn:hover {
+  background: #23867a;
 }
 
 .tab-btn.active {
-  background: #0b2545;
+  background: #0d3b66;
 }
 
+/* ---------- TABS ---------- */
 .tab {
   display: none;
-  padding: 20px;
+  padding: 25px;
 }
 
 .tab.active {
   display: block;
 }
 
+/* ---------- CARDS ---------- */
 .card-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
 }
 
 .card {
   background: white;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  border-left: 5px solid #2a9d8f;
 }
 
 .card h3 {
-  margin: 0;
-  color: #0b2545;
+  margin: 0 0 8px;
+  color: #0d3b66;
+  font-size: 18px;
 }
 
 .card p {
   margin: 6px 0;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ---------- STREAM ---------- */
+.stream-header {
+  margin-bottom: 15px;
+  font-weight: 600;
 }
 
 .stream-layout {
   position: relative;
-  max-width: 800px;
+  max-width: 900px;
 }
 
 video {
   width: 100%;
   border-radius: 10px;
+  background: black;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }
 
+/* ---------- OVERLAY ---------- */
 .overlay {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  background: rgba(255,255,255,0.85);
-  padding: 10px;
-  border-radius: 8px;
+  top: 12px;
+  left: 12px;
+  background: rgba(255,255,255,0.92);
+  padding: 14px;
+  border-radius: 10px;
+  min-width: 140px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.overlay p {
+  margin: 6px 0;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ---------- RESET BUTTON ---------- */
+.reset-btn {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: none;
+  background: #e63946;
+  color: white;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background: #c92c3a;
+}
+
+/* ---------- TABLE ---------- */
+.table-wrapper {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
 }
 
 th, td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+  padding: 12px;
   text-align: center;
+  border-bottom: 1px solid #e5edf4;
 }
 
 th {
-  background: #00bcd4;
+  background: #2a9d8f;
   color: white;
+  font-weight: 600;
 }
+
+tr:nth-child(even) {
+  background: #f7fafc;
+}
+
