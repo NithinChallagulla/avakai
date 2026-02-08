@@ -1,74 +1,103 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Avakai Event Analytics</title>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f7fbfd;
+  color: #0b2545;
+}
 
-  <link rel="stylesheet" href="./style.css">
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-</head>
+header {
+  background: #0b2545;
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
 
-<body>
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: #e6f7fa;
+}
 
-<header>
-  <h1>Avakai Event Analytics</h1>
-</header>
+.tab-btn {
+  padding: 10px 18px;
+  border: none;
+  background: #00bcd4;
+  color: white;
+  cursor: pointer;
+  border-radius: 6px;
+  font-weight: bold;
+}
 
-<nav>
-  <button class="tab-btn active" onclick="openTab('counts', this)">People Count</button>
-  <button class="tab-btn" onclick="openTab('stream', this)">Stream + Count</button>
-  <button class="tab-btn" onclick="openTab('master', this)">Master</button>
-</nav>
+.tab-btn.active {
+  background: #0b2545;
+}
 
-<!-- TAB 1 -->
-<section id="counts" class="tab active">
-  <div id="countCards" class="card-container"></div>
-</section>
+.tab {
+  display: none;
+  padding: 20px;
+}
 
-<!-- TAB 2 -->
-<section id="stream" class="tab">
-  <select id="streamSelect" onchange="loadStream()"></select>
+.tab.active {
+  display: block;
+}
 
-  <div class="stream-layout">
-    <video
-      id="video"
-      controls
-      muted
-      autoplay
-      playsinline
-      style="width:100%; max-width:900px; background:black;">
-    </video>
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
 
-   <div class="overlay">
-  <p id="liveCount">Live: -</p>
-  <p id="todayCount">Today: -</p>
-  <p id="eventCount">Event: -</p>
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
 
-  <button id="resetBtn" onclick="resetStream()" class="reset-btn">
-    Reset This Stream
-  </button>
-</div>
+.card h3 {
+  margin: 0;
+  color: #0b2545;
+}
 
-  </div>
-</section>
+.card p {
+  margin: 6px 0;
+  font-weight: bold;
+}
 
-<!-- TAB 3 -->
-<section id="master" class="tab">
-  <table>
-    <thead>
-      <tr>
-        <th>Stream ID</th>
-        <th>Name</th>
-        <th>Status</th>
-        <th>Live</th>
-        <th>Today</th>
-        <th>Event</th>
-      </tr>
-    </thead>
-    <tbody id="masterTable"></tbody>
-  </table>
-</section>
+.stream-layout {
+  position: relative;
+  max-width: 800px;
+}
 
-<script src="./script.js"></script>
-</body>
-</html>
+video {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255,255,255,0.85);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #00bcd4;
+  color: white;
+}
