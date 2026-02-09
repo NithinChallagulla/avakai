@@ -29,13 +29,12 @@
 </section>
 
 <!-- TAB 2 -->
+<!-- TAB 2 -->
 <section id="stream" class="tab">
-  <div class="stream-header">
-    <label>Select Camera:</label>
-    <select id="streamSelect" onchange="loadStream()"></select>
-  </div>
 
-  <div class="stream-layout">
+  <select id="streamSelect" onchange="loadStream()"></select>
+
+  <div class="video-container">
     <video
       id="video"
       controls
@@ -43,17 +42,33 @@
       autoplay
       playsinline>
     </video>
+  </div>
 
-    <div class="overlay">
-      <p id="liveCount">Live: -</p>
-      <p id="todayCount">Today: -</p>
-      <p id="eventCount">Event: -</p>
+  <div class="controls">
+    <button onclick="toggleAnalytics()" class="analytics-btn">
+      View Analytics
+    </button>
+    <button onclick="resetStream()" class="reset-btn">
+      Reset Counts
+    </button>
+  </div>
 
-      <button id="resetBtn" onclick="resetStream()" class="reset-btn">
-        Reset This Stream
-      </button>
+  <!-- ANALYTICS PANEL -->
+  <div id="analyticsPanel" class="analytics-panel hidden">
+    <div class="stats">
+      <div>Live: <span id="liveCount">0</span></div>
+      <div>Today: <span id="todayCount">0</span></div>
+      <div>Event: <span id="eventCount">0</span></div>
+    </div>
+
+    <canvas id="hourlyChart"></canvas>
+
+    <div class="csv-buttons">
+      <button onclick="downloadCSV('hourly')">Download Hourly CSV</button>
+      <button onclick="downloadCSV('daily')">Download Daily CSV</button>
     </div>
   </div>
+
 </section>
 
 <!-- TAB 3 -->
