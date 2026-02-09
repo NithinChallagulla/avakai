@@ -173,3 +173,57 @@ tr:nth-child(even) {
   background: #f7fafc;
 }
 
+.video-container {
+  max-width: 1000px;
+  margin: 20px auto;
+}
+
+video {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.controls {
+  text-align: center;
+  margin: 15px;
+}
+
+.analytics-btn,
+.reset-btn {
+  padding: 10px 20px;
+  margin: 5px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.analytics-btn {
+  background: #1f6fb2;
+  color: white;
+}
+
+.reset-btn {
+  background: #d9534f;
+  color: white;
+}
+
+.analytics-panel {
+  max-width: 900px;
+  margin: 20px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.hidden {
+  display: none;
+}
+
+.stats {
+  display: flex;
+  justify-content: space-around;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
