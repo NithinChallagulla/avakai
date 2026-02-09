@@ -27,14 +27,13 @@
 <section id="counts" class="tab active">
   <div id="countCards" class="card-container"></div>
 </section>
-
-<!-- TAB 2 -->
 <!-- TAB 2 -->
 <section id="stream" class="tab">
 
   <select id="streamSelect" onchange="loadStream()"></select>
 
-  <div class="video-container">
+  <div class="video-wrapper">
+
     <video
       id="video"
       controls
@@ -42,31 +41,26 @@
       autoplay
       playsinline>
     </video>
-  </div>
 
-  <div class="controls">
-    <button onclick="toggleAnalytics()" class="analytics-btn">
-      View Analytics
-    </button>
-    <button onclick="resetStream()" class="reset-btn">
-      Reset Counts
-    </button>
-  </div>
+    <!-- ANALYTICS OVERLAY -->
+    <div class="analytics-overlay">
+      <div class="stats">
+        <div>Live: <span id="liveCount">0</span></div>
+        <div>Today: <span id="todayCount">0</span></div>
+        <div>Event: <span id="eventCount">0</span></div>
+      </div>
 
-  <!-- ANALYTICS PANEL -->
-  <div id="analyticsPanel" class="analytics-panel hidden">
-    <div class="stats">
-      <div>Live: <span id="liveCount">0</span></div>
-      <div>Today: <span id="todayCount">0</span></div>
-      <div>Event: <span id="eventCount">0</span></div>
+      <canvas id="hourlyChart"></canvas>
+
+      <div class="csv-buttons">
+        <button onclick="downloadCSV('hourly')">Hourly CSV</button>
+        <button onclick="downloadCSV('daily')">Daily CSV</button>
+        <button onclick="resetStream()" class="reset-btn">
+          Reset
+        </button>
+      </div>
     </div>
 
-    <canvas id="hourlyChart"></canvas>
-
-    <div class="csv-buttons">
-      <button onclick="downloadCSV('hourly')">Download Hourly CSV</button>
-      <button onclick="downloadCSV('daily')">Download Daily CSV</button>
-    </div>
   </div>
 
 </section>
