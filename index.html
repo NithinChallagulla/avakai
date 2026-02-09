@@ -2,90 +2,182 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Mary Matha Festival Analytics – 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NTR District Drone Live</title>
 
-  <link rel="stylesheet" href="./style.css">
+  <!-- HLS.js -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f4f6f9;
+      font-family: "Segoe UI", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: white;
+      border-bottom: 2px solid #ddd;
+      padding: 12px;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      color: #111;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Logos */
+    .logos {
+      position: absolute;
+      left: 15px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .logos img {
+      height: 55px;
+      width: auto;
+    }
+
+    /* Status */
+    .status {
+      position: absolute;
+      right: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: #eafbea;
+      color: green;
+      border: 1px solid #b7e3b7;
+    }
+
+    .status.reconnecting {
+      background: #fff7e6;
+      color: #d17b00;
+      border: 1px solid #ffd591;
+    }
+
+    /* Video Container */
+    .video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90vh;
+      width: 100%;
+      padding: 15px;
+    }
+
+    video {
+      width: 90%;
+      height: 100%;
+      border-radius: 14px;
+      border: 2px solid #bbb;
+      background: black;
+      box-shadow: 0px 6px 18px rgba(0,0,0,0.15);
+    }
+  </style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-content">
-    <h1>Mary Matha Festival Analytics – 2026<h1>
-    <p class="powered">Powered by AEROVHYN Pvt. Ltd.</p>
-  </div>
-</header>
+  <!-- Header -->
+  <div class="header">
 
-<nav>
-  <button class="tab-btn active" onclick="openTab('counts', this)">People Count</button>
-  <button class="tab-btn" onclick="openTab('stream', this)">Live Stream</button>
-  <button class="tab-btn" onclick="openTab('master', this)">Master Control</button>
-</nav>
-
-<!-- TAB 1 -->
-<section id="counts" class="tab active">
-  <div id="countCards" class="card-container"></div>
-</section>
-<!-- TAB 2 -->
-<section id="stream" class="tab">
-
-  <select id="streamSelect" onchange="loadStream()"></select>
-
-  <div class="video-wrapper">
-
-    <video
-      id="video"
-      controls
-      muted
-      autoplay
-      playsinline>
-    </video>
-
-    <!-- ANALYTICS OVERLAY -->
-    <div class="analytics-overlay">
-      <div class="stats">
-        <div>Live: <span id="liveCount">0</span></div>
-        <div>Today: <span id="todayCount">0</span></div>
-        <div>Event: <span id="eventCount">0</span></div>
-      </div>
-
-      <canvas id="hourlyChart"></canvas>
-
-      <div class="csv-buttons">
-        <button onclick="downloadCSV('hourly')">Hourly CSV</button>
-        <button onclick="downloadCSV('daily')">Daily CSV</button>
-        <button onclick="resetStream()" class="reset-btn">
-          Reset
-        </button>
-      </div>
+    <!-- Logos -->
+    <div class="logos">
+      <img src="logo1.png" alt="Logo 1">
+      <img src="logo2.png" alt="Logo 2">
     </div>
 
+    డ్రగ్స్ పై దండయాత్ర <br>
+    NTR District Drone Live Link
+
+    <!-- Live Status -->
+    <div id="statusBox" class="status">LIVE</div>
   </div>
 
-</section>
-
-<!-- TAB 3 -->
-<section id="master" class="tab">
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Stream ID</th>
-          <th>Camera Name</th>
-          <th>Status</th>
-          <th>Live</th>
-          <th>Today</th>
-          <th>Event</th>
-        </tr>
-      </thead>
-      <tbody id="masterTable"></tbody>
-    </table>
+  <!-- Video -->
+  <div class="video-container">
+    <video id="video" controls autoplay muted></video>
   </div>
-</section>
 
-<script src="./script.js"></script>
+  <script>
+    const video = document.getElementById("video");
+    const statusBox = document.getElementById("statusBox");
+
+    const streamUrl = "http://49.204.168.164/hls/cam1.m3u8";
+
+    let hls;
+    let retryInterval;
+
+    function setStatusLive() {
+      statusBox.innerText = "LIVE";
+      statusBox.className = "status";
+    }
+
+    function setStatusReconnecting() {
+      statusBox.innerText = "RECONNECTING...";
+      statusBox.className = "status reconnecting";
+    }
+
+    function startStream() {
+      if (hls) {
+        hls.destroy();
+      }
+
+      if (Hls.isSupported()) {
+        hls = new Hls({
+          maxBufferLength: 10,
+          liveSyncDuration: 3,
+        });
+
+        hls.loadSource(streamUrl);
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          setStatusLive();
+        });
+
+        hls.on(Hls.Events.ERROR, (event, data) => {
+          console.log("Stream Error:", data);
+
+          setStatusReconnecting();
+
+          if (!retryInterval) {
+            retryInterval = setInterval(() => {
+              console.log("Retrying stream...");
+              startStream();
+            }, 5000);
+          }
+        });
+
+      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+        video.src = streamUrl;
+        setStatusLive();
+      } else {
+        alert("HLS not supported in this browser.");
+      }
+    }
+
+    // Start initially
+    startStream();
+
+    // Subtle Refresh Every 5 Seconds (Keeps live smooth)
+    setInterval(() => {
+      if (video.paused || video.readyState < 2) {
+        console.log("Refreshing stream...");
+        startStream();
+      }
+    }, 5000);
+  </script>
+
 </body>
 </html>
