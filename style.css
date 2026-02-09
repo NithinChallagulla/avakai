@@ -227,3 +227,61 @@ video {
   font-size: 18px;
   margin-bottom: 20px;
 }
+
+
+.video-wrapper {
+  position: relative;
+  max-width: 1100px;
+  margin: 20px auto;
+}
+
+.video-wrapper video {
+  width: 100%;
+  border-radius: 12px;
+  background: black;
+}
+
+/* Analytics overlay */
+.analytics-overlay {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 14px;
+  border-radius: 10px;
+  width: 320px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.analytics-overlay .stats {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.analytics-overlay canvas {
+  background: white;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.csv-buttons {
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.csv-buttons button {
+  padding: 6px 8px;
+  border: none;
+  background: #2a9d8f;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.csv-buttons button:hover {
+  background: #23867a;
+}
