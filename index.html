@@ -60,9 +60,19 @@
 
 <!-- TAB 3: ANALYTICS -->
 <section id="analytics" class="tab">
+
+  <div class="analytics-summary">
+    <div class="summary-card">
+      <h3 id="analyticsToday">Today: -</h3>
+    </div>
+    <div class="summary-card">
+      <h3 id="analyticsEvent">Event: -</h3>
+    </div>
+  </div>
+
   <div class="analytics-tile" onclick="openChartModal()">
     <div class="tile-header">
-      <h2>Hourly Crowd Flow</h2>
+      <h2>Hourly Crowd Flow</hh2>
       <span class="expand-hint">Click to enlarge</span>
     </div>
     <canvas id="hourlyChart"></canvas>
@@ -73,6 +83,7 @@
     <button onclick="downloadDailyCSV()">Download Daily CSV</button>
   </div>
 </section>
+
 
 <!-- TAB 4: MASTER -->
 <section id="master" class="tab">
