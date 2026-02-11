@@ -7,14 +7,13 @@
   <link rel="stylesheet" href="./style.css">
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 <body>
 
 <header>
   <div class="header-content">
-    <h1>Mary Matha Festival Analytics – 2026<h1>
+    <h1>Mary Matha Festival Analytics – 2026</h1>
     <p class="powered">Powered by AEROVHYN Pvt. Ltd.</p>
   </div>
 </header>
@@ -22,15 +21,17 @@
 <nav>
   <button class="tab-btn active" onclick="openTab('counts', this)">People Count</button>
   <button class="tab-btn" onclick="openTab('stream', this)">Live Stream</button>
+  <button class="tab-btn" onclick="openTab('analytics', this)">Analytics</button>
   <button class="tab-btn" onclick="openTab('master', this)">Master Control</button>
 </nav>
 
-<!-- TAB 1 -->
+<!-- TAB 1: PEOPLE COUNT -->
 <section id="counts" class="tab active">
   <div id="countCards" class="card-container"></div>
 </section>
 
-<!-- TAB 2 --><section id="stream" class="tab">
+<!-- TAB 2: STREAM ONLY -->
+<section id="stream" class="tab">
   <div class="stream-header">
     <label>Select Camera:</label>
     <select id="streamSelect" onchange="loadStream()"></select>
@@ -55,21 +56,25 @@
       </button>
     </div>
   </div>
+</section>
 
-  <!-- ANALYTICS PANEL -->
-  <div class="analytics-panel">
-    <h2>Hourly Crowd Flow</h2>
-    <canvas id="hourlyChart"></canvas>
-
-    <div class="csv-buttons">
-      <button onclick="downloadHourlyCSV()">Download Hourly CSV</button>
-      <button onclick="downloadDailyCSV()">Download Daily CSV</button>
+<!-- TAB 3: ANALYTICS -->
+<section id="analytics" class="tab">
+  <div class="analytics-tile" onclick="openChartModal()">
+    <div class="tile-header">
+      <h2>Hourly Crowd Flow</h2>
+      <span class="expand-hint">Click to enlarge</span>
     </div>
+    <canvas id="hourlyChart"></canvas>
+  </div>
+
+  <div class="csv-buttons">
+    <button onclick="downloadHourlyCSV()">Download Hourly CSV</button>
+    <button onclick="downloadDailyCSV()">Download Daily CSV</button>
   </div>
 </section>
 
-
-<!-- TAB 3 -->
+<!-- TAB 4: MASTER -->
 <section id="master" class="tab">
   <div class="table-wrapper">
     <table>
@@ -88,6 +93,14 @@
   </div>
 </section>
 
+<!-- FULLSCREEN CHART MODAL -->
+<div id="chartModal" class="chart-modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeChartModal()">×</span>
+    <h2>Hourly Crowd Flow</h2>
+    <canvas id="hourlyChartModal"></canvas>
+  </div>
+</div>
 
 <script src="./script.js"></script>
 </body>
