@@ -210,6 +210,7 @@ async function updateHourlyChart(id) {
 }
 
 
+
 /* ---------- MODAL ---------- */
 function openChartModal() {
   const modal = document.getElementById("chartModal");
