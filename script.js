@@ -156,8 +156,21 @@ async function updateHourlyChart(id) {
     const data = await res.json();
 
     const hourly = data.hourly || {};
-    const labels = Object.keys(hourly);
-    const values = Object.values(hourly);
+
+    // force 24-hour ordered labels
+    const labels = [];
+    const values = [];
+
+    for (let i = 0; i < 24; i++) {
+      const h = i.toString().padStart(2, "0");
+
+      // convert to AM/PM label
+      let hour = i % 12 || 12;
+      let suffix = i < 12 ? "AM" : "PM";
+      labels.push(`${hour} ${suffix}`);
+
+      values.push(hourly[h] || 0);
+    }
 
     const ctx = document.getElementById("hourlyChart");
     if (!ctx) return;
@@ -176,12 +189,14 @@ async function updateHourlyChart(id) {
         datasets: [{
           data: values,
           borderRadius: 8,
-          barThickness: 20
+          barThickness: 18
         }]
       },
       options: {
         responsive: true,
-        plugins: { legend: { display: false } },
+        plugins: {
+          legend: { display: false }
+        },
         scales: {
           x: { grid: { display: false } },
           y: { beginAtZero: true }
@@ -193,6 +208,7 @@ async function updateHourlyChart(id) {
     console.error("chart error", e);
   }
 }
+
 
 /* ---------- MODAL ---------- */
 function openChartModal() {
