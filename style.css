@@ -209,3 +209,61 @@ tr:nth-child(even) {
   border-radius: 6px;
   cursor: pointer;
 }
+
+
+
+
+
+/* ---------- ANALYTICS TILE ---------- */
+.analytics-tile {
+  background: white;
+  border-radius: 14px;
+  padding: 20px;
+  margin: 30px auto;
+  max-width: 1100px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.analytics-tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+}
+
+.tile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expand-hint {
+  font-size: 13px;
+  color: #777;
+}
+
+/* ---------- MODAL ---------- */
+.chart-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  width: 85%;
+  max-width: 1100px;
+}
+
+.close-btn {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+}
+
