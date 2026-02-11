@@ -30,8 +30,7 @@
   <div id="countCards" class="card-container"></div>
 </section>
 
-<!-- TAB 2 -->
-<section id="stream" class="tab">
+<!-- TAB 2 --><section id="stream" class="tab">
   <div class="stream-header">
     <label>Select Camera:</label>
     <select id="streamSelect" onchange="loadStream()"></select>
@@ -45,15 +44,6 @@
       autoplay
       playsinline>
     </video>
-<div class="analytics-panel">
-  <h2>Hourly Crowd Flow</h2>
-  <canvas id="hourlyChart"></canvas>
-
-  <div class="csv-buttons">
-    <button onclick="downloadHourlyCSV()">Download Hourly CSV</button>
-    <button onclick="downloadDailyCSV()">Download Daily CSV</button>
-  </div>
-</div>
 
     <div class="overlay">
       <p id="liveCount">Live: -</p>
@@ -66,9 +56,18 @@
     </div>
   </div>
 
+  <!-- ANALYTICS PANEL -->
+  <div class="analytics-panel">
+    <h2>Hourly Crowd Flow</h2>
+    <canvas id="hourlyChart"></canvas>
 
-
+    <div class="csv-buttons">
+      <button onclick="downloadHourlyCSV()">Download Hourly CSV</button>
+      <button onclick="downloadDailyCSV()">Download Daily CSV</button>
+    </div>
+  </div>
 </section>
+
 
 <!-- TAB 3 -->
 <section id="master" class="tab">
