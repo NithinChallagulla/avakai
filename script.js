@@ -4,6 +4,9 @@ let overlayInterval = null;
 let hls = null;
 let currentStreamId = null;
 
+let chart = null;
+let lastHourlyData = {};
+
 /* ---------- TAB HANDLING ---------- */
 function openTab(id, btn) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
@@ -69,7 +72,7 @@ function renderMaster() {
   });
 }
 
-/* ---------- STREAM SELECT (PRESERVE SELECTION) ---------- */
+/* ---------- STREAM SELECT ---------- */
 function populateSelectPreserve() {
   const sel = document.getElementById("streamSelect");
   if (!sel) return;
@@ -102,7 +105,7 @@ function loadStream() {
   const id = sel.value;
   currentStreamId = id;
 
-const url = `/hls/${id}.m3u8`;
+  const url = `/hls/${id}.m3u8`;
 
   if (hls) {
     hls.destroy();
@@ -127,7 +130,7 @@ const url = `/hls/${id}.m3u8`;
   startOverlayAutoUpdate(id);
 }
 
-/* ---------- OVERLAY ---------- */
+/* ---------- OVERLAY + CHART ---------- */
 async function updateOverlay(id) {
   try {
     const res = await fetch(`${API}/count/${id}`);
@@ -136,6 +139,9 @@ async function updateOverlay(id) {
     document.getElementById("liveCount").innerText = `Live: ${d.live}`;
     document.getElementById("todayCount").innerText = `Today: ${d.today}`;
     document.getElementById("eventCount").innerText = `Event: ${d.event_total}`;
+
+    updateHourlyChart(d.hourly);
+
   } catch (e) {
     console.error("overlay failed", e);
   }
@@ -144,6 +150,64 @@ async function updateOverlay(id) {
 function startOverlayAutoUpdate(id) {
   if (overlayInterval) clearInterval(overlayInterval);
   overlayInterval = setInterval(() => updateOverlay(id), 3000);
+}
+
+/* ---------- HOURLY CHART ---------- */
+function updateHourlyChart(hourly) {
+  lastHourlyData = hourly;
+
+  const labels = Object.keys(hourly);
+  const values = Object.values(hourly);
+
+  const canvas = document.getElementById("hourlyChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+
+  if (chart) {
+    chart.destroy();
+  }
+
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "People per Hour",
+        data: values
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+}
+
+/* ---------- CSV DOWNLOAD ---------- */
+function downloadCSV() {
+  let csv = "Hour,Count\n";
+
+  for (let hour in lastHourlyData) {
+    csv += `${hour},${lastHourlyData[hour]}\n`;
+  }
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "hourly_counts.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
 
 /* ---------- RESET STREAM ---------- */
