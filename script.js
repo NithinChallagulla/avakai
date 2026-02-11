@@ -17,9 +17,13 @@ function openTab(id, btn) {
   if (id === "stream") {
     setTimeout(loadStream, 200);
   }
-  if (id === "analytics") {
-    setTimeout(() => updateHourlyChart(currentStreamId), 200);
-  }
+if (id === "analytics") {
+  setTimeout(() => {
+    updateHourlyChart(currentStreamId);
+    updateAnalyticsSummary(currentStreamId);
+  }, 200);
+}
+
 }
 
 /* ---------- FETCH STREAMS ---------- */
@@ -209,6 +213,22 @@ async function updateHourlyChart(id) {
   }
 }
 
+async function updateAnalyticsSummary(id) {
+  if (!id) return;
+
+  try {
+    const res = await fetch(`${API}/count/${id}`);
+    const d = await res.json();
+
+    document.getElementById("analyticsToday").innerText =
+      `Today: ${d.today}`;
+
+    document.getElementById("analyticsEvent").innerText =
+      `Event: ${d.event_total}`;
+  } catch (e) {
+    console.error("analytics summary error", e);
+  }
+}
 
 
 /* ---------- MODAL ---------- */
