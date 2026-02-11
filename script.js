@@ -3,9 +3,7 @@ let streams = [];
 let overlayInterval = null;
 let hls = null;
 let currentStreamId = null;
-
-let chart = null;
-let lastHourlyData = {};
+let hourlyChart = null;
 
 /* ---------- TAB HANDLING ---------- */
 function openTab(id, btn) {
@@ -116,21 +114,16 @@ function loadStream() {
     hls = new Hls({ liveSyncDuration: 2 });
     hls.loadSource(url);
     hls.attachMedia(video);
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      video.muted = true;
-      video.play().catch(() => {});
-    });
   } else {
     video.src = url;
-    video.play().catch(() => {});
   }
 
   updateOverlay(id);
   startOverlayAutoUpdate(id);
+  updateHourlyChart(id);
 }
 
-/* ---------- OVERLAY + CHART ---------- */
+/* ---------- OVERLAY ---------- */
 async function updateOverlay(id) {
   try {
     const res = await fetch(`${API}/count/${id}`);
@@ -139,9 +132,6 @@ async function updateOverlay(id) {
     document.getElementById("liveCount").innerText = `Live: ${d.live}`;
     document.getElementById("todayCount").innerText = `Today: ${d.today}`;
     document.getElementById("eventCount").innerText = `Event: ${d.event_total}`;
-
-    updateHourlyChart(d.hourly);
-
   } catch (e) {
     console.error("overlay failed", e);
   }
@@ -149,82 +139,101 @@ async function updateOverlay(id) {
 
 function startOverlayAutoUpdate(id) {
   if (overlayInterval) clearInterval(overlayInterval);
-  overlayInterval = setInterval(() => updateOverlay(id), 3000);
+  overlayInterval = setInterval(() => {
+    updateOverlay(id);
+    updateHourlyChart(id);
+  }, 5000);
 }
 
 /* ---------- HOURLY CHART ---------- */
-function updateHourlyChart(hourly) {
-  lastHourlyData = hourly;
+async function updateHourlyChart(id) {
+  try {
+    const res = await fetch(`${API}/count/${id}`);
+    const data = await res.json();
 
-  const labels = Object.keys(hourly);
-  const values = Object.values(hourly);
+    const hourly = data.hourly || {};
+    const labels = Object.keys(hourly);
+    const values = Object.values(hourly);
 
-  const canvas = document.getElementById("hourlyChart");
-  if (!canvas) return;
+    const ctx = document.getElementById("hourlyChart");
+    if (!ctx) return;
 
-  const ctx = canvas.getContext("2d");
+    if (hourlyChart) {
+      hourlyChart.data.labels = labels;
+      hourlyChart.data.datasets[0].data = values;
+      hourlyChart.update();
+      return;
+    }
 
-  if (chart) {
-    chart.destroy();
-  }
-
-  chart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "People per Hour",
-        data: values
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false }
+    hourlyChart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "People per Hour",
+          data: values
+        }]
       },
-      scales: {
-        y: {
-          beginAtZero: true
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false }
         }
       }
-    }
-  });
+    });
+
+  } catch (e) {
+    console.error("chart error", e);
+  }
 }
 
-/* ---------- CSV DOWNLOAD ---------- */
-function downloadCSV() {
+/* ---------- CSV EXPORT ---------- */
+async function downloadHourlyCSV() {
+  if (!currentStreamId) return;
+
+  const res = await fetch(`${API}/count/${currentStreamId}`);
+  const data = await res.json();
+
   let csv = "Hour,Count\n";
+  Object.entries(data.hourly).forEach(([h, c]) => {
+    csv += `${h},${c}\n`;
+  });
 
-  for (let hour in lastHourlyData) {
-    csv += `${hour},${lastHourlyData[hour]}\n`;
-  }
+  downloadFile(csv, "hourly_counts.csv");
+}
 
-  const blob = new Blob([csv], { type: "text/csv" });
+async function downloadDailyCSV() {
+  if (!currentStreamId) return;
+
+  const res = await fetch(`${API}/daily/${currentStreamId}`);
+  const data = await res.json();
+
+  let csv = "Date,Count\n";
+  data.forEach(row => {
+    csv += `${row.date},${row.count}\n`;
+  });
+
+  downloadFile(csv, "daily_counts.csv");
+}
+
+function downloadFile(content, filename) {
+  const blob = new Blob([content], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
   a.href = url;
-  a.download = "hourly_counts.csv";
+  a.download = filename;
   a.click();
 
   URL.revokeObjectURL(url);
 }
 
-/* ---------- RESET STREAM ---------- */
+/* ---------- RESET ---------- */
 async function resetStream() {
   if (!currentStreamId) return;
-
   if (!confirm(`Reset counts for ${currentStreamId}?`)) return;
 
-  try {
-    await fetch(`${API}/reset/${currentStreamId}`, {
-      method: "POST"
-    });
-    updateOverlay(currentStreamId);
-    fetchStreams();
-  } catch (e) {
-    alert("Reset failed");
-  }
+  await fetch(`${API}/reset/${currentStreamId}`, { method: "POST" });
 }
 
 /* ---------- START ---------- */
