@@ -4,6 +4,7 @@ let overlayInterval = null;
 let hls = null;
 let currentStreamId = null;
 let hourlyChart = null;
+let hourlyChartModal = null;
 
 /* ---------- TAB HANDLING ---------- */
 function openTab(id, btn) {
@@ -15,6 +16,9 @@ function openTab(id, btn) {
 
   if (id === "stream") {
     setTimeout(loadStream, 200);
+  }
+  if (id === "analytics") {
+    setTimeout(() => updateHourlyChart(currentStreamId), 200);
   }
 }
 
@@ -120,7 +124,6 @@ function loadStream() {
 
   updateOverlay(id);
   startOverlayAutoUpdate(id);
-  updateHourlyChart(id);
 }
 
 /* ---------- OVERLAY ---------- */
@@ -141,12 +144,13 @@ function startOverlayAutoUpdate(id) {
   if (overlayInterval) clearInterval(overlayInterval);
   overlayInterval = setInterval(() => {
     updateOverlay(id);
-    updateHourlyChart(id);
-  }, 5000);
+  }, 3000);
 }
 
 /* ---------- HOURLY CHART ---------- */
 async function updateHourlyChart(id) {
+  if (!id) return;
+
   try {
     const res = await fetch(`${API}/count/${id}`);
     const data = await res.json();
@@ -170,14 +174,17 @@ async function updateHourlyChart(id) {
       data: {
         labels,
         datasets: [{
-          label: "People per Hour",
-          data: values
+          data: values,
+          borderRadius: 8,
+          barThickness: 20
         }]
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { display: false }
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid: { display: false } },
+          y: { beginAtZero: true }
         }
       }
     });
@@ -185,6 +192,52 @@ async function updateHourlyChart(id) {
   } catch (e) {
     console.error("chart error", e);
   }
+}
+
+/* ---------- MODAL ---------- */
+function openChartModal() {
+  const modal = document.getElementById("chartModal");
+  modal.style.display = "flex";
+  renderModalChart();
+}
+
+function closeChartModal() {
+  document.getElementById("chartModal").style.display = "none";
+}
+
+async function renderModalChart() {
+  if (!currentStreamId) return;
+
+  const res = await fetch(`${API}/count/${currentStreamId}`);
+  const data = await res.json();
+
+  const hourly = data.hourly || {};
+  const labels = Object.keys(hourly);
+  const values = Object.values(hourly);
+
+  const ctx = document.getElementById("hourlyChartModal");
+
+  if (hourlyChartModal) hourlyChartModal.destroy();
+
+  hourlyChartModal = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        borderRadius: 8,
+        barThickness: 40
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { beginAtZero: true }
+      }
+    }
+  });
 }
 
 /* ---------- CSV EXPORT ---------- */
