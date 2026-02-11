@@ -47,16 +47,19 @@ function renderCounts() {
 
   el.innerHTML = "";
   streams.forEach(s => {
+    const today = s.today ?? s.today_count ?? 0;
+
     el.innerHTML += `
       <div class="card">
         <h3>${s.name}</h3>
         <p>Live: ${s.live}</p>
-        <p>Today: ${s.today}</p>
+        <p>Today: ${today}</p>
         <p>Event: ${s.event_total}</p>
       </div>
     `;
   });
 }
+
 
 /* ---------- MASTER ---------- */
 function renderMaster() {
@@ -65,18 +68,21 @@ function renderMaster() {
 
   el.innerHTML = "";
   streams.forEach(s => {
+    const today = s.today ?? s.today_count ?? 0;
+
     el.innerHTML += `
       <tr>
         <td>${s.stream_id}</td>
         <td>${s.name}</td>
         <td>${s.status}</td>
         <td>${s.live}</td>
-        <td>${s.today}</td>
+        <td>${today}</td>
         <td>${s.event_total}</td>
       </tr>
     `;
   });
 }
+
 
 /* ---------- STREAM SELECT ---------- */
 function populateSelectPreserve() {
@@ -299,12 +305,21 @@ async function downloadDailyCSV() {
   const data = await res.json();
 
   let csv = "Date,Count\n";
-  data.forEach(row => {
-    csv += `${row.date},${row.count}\n`;
-  });
+
+  if (Array.isArray(data)) {
+    data.forEach(row => {
+      csv += `${row.date},${row.count}\n`;
+    });
+  } else {
+    // fallback if backend returns object
+    Object.entries(data).forEach(([date, count]) => {
+      csv += `${date},${count}\n`;
+    });
+  }
 
   downloadFile(csv, "daily_counts.csv");
 }
+
 
 function downloadFile(content, filename) {
   const blob = new Blob([content], { type: "text/csv" });
